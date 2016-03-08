@@ -34,8 +34,8 @@ plot([-2 2],[0 0],'k')
 plot([0 0],[-2 2],'k')
 
 %% Generate lines
-Polygon_vertex = [x y]
-shifted_polygon_vertex = circshift(Polygon_vertex, -1)
+Polygon_vertex = [x y];
+shifted_polygon_vertex = circshift(Polygon_vertex, -1);
 gap_y = radius./10;
 
 % left limit
@@ -68,11 +68,13 @@ end
 PolygonXY = [Polygon_vertex shifted_polygon_vertex];
 LinesXY;
 
-
 %% SPEED TEST METHOD 1.
 tic
 out = lineSegmentIntersect(PolygonXY,LinesXY);
 dt_1 = toc;
+intersections = [out.intMatrixX(:) out.intMatrixY(:)];
+intersections( ~any(intersections,2), : ) = [];
+
 
 fprintf(1,'Method 1 took %.2f seconds for %.0f line segments...\n',dt_1,nl);
 
@@ -96,8 +98,14 @@ if is_show
     line([PolygonXY(:,1)';PolygonXY(:,3)'],[PolygonXY(:,2)';PolygonXY(:,4)'],'Color','r');
     line([LinesXY(:,1)';LinesXY(:,3)'],[LinesXY(:,2)';LinesXY(:,4)'],'Color','k');
     
-    scatter(out.intMatrixX(:),out.intMatrixY(:),[],'r');
+    scatter(intersections(:,1), intersections(:,2),[],'b');
 
     title('Intersection Points');
     
+    
+    figure('Position',[500 90 500 500],'Renderer','zbuffer');
+    sort(intersections);
+    plot(intersections(:,1), intersections(:,2));
+    
+    title('Straight Path');
 end
