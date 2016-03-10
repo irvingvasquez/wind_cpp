@@ -33,9 +33,12 @@ hold on
 plot([-2 2],[0 0],'k')
 plot([0 0],[-2 2],'k')
 
-%% Generate lines
 Polygon_vertex = [x y];
 shifted_polygon_vertex = circshift(Polygon_vertex, -1);
+PolygonXY = [Polygon_vertex shifted_polygon_vertex];
+
+%% Generate lines
+
 gap_y = radius./10;
 
 % left limit
@@ -65,7 +68,7 @@ while(x1 <= r_limit)
     i = i + 1;
 end
 
-PolygonXY = [Polygon_vertex shifted_polygon_vertex];
+
 LinesXY;
 
 %% SPEED TEST METHOD 1.

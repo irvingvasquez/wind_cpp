@@ -3,12 +3,12 @@ clc
 
 Wp1 = [-1 0]
 Wp2 = [1 0]
-r = 2;
+r = 4;
 dx = 2;
 
-[P1,P2,P3,d, beta] = getDubinsCurve(Wp1,Wp2,r,dx);
+[P1,P2,P3,d,beta] = getDubinsCurve(Wp1,Wp2,r,dx);
 
-
+%% Draw figure
 figure('Position',[10 100 500 500],'Renderer','zbuffer');
 axes_properties.DataAspectRatio = [1 1 1];
 
