@@ -6,3 +6,4 @@ function [X,Y] = circle(P, radius, theta0, theta1, steep)
     Y = radius * sin(Theta);
     Y = P(1,2) + Y;
 end
+

@@ -24,6 +24,7 @@ x2 = x1;
 
 df = 0;
 db = 0;
+dr = 0;
 dir = 1;% forth abajo arriba, -back
 
 %%
@@ -130,12 +131,27 @@ while(x1 <= r_limit)
                 dif = enterWP(1,2) - lastWP(1,2);
                 if(dif > 0) % agregar un punto a la izquierda
                     intermediateWP = [lastWP(1,1) enterWP(1,2)];
+                    
+                    Path(i,:) = intermediateWP;
+                    i = i+1;
+
+                    [dubinsWP, dist] = getDubinsWaypoints(intermediateWP, enterWP, curve_radius, dx, 1);
+                    Path = [Path ;dubinsWP];
+                    i = i + size(dubinsWP,1);
+                    
+                    dr = dr + dist;
                 else % agregar un punto a la derecha
                     intermediateWP = [enterWP(1,1) lastWP(1,2)];
+                                                            
+                    [dubinsWP, dist] = getDubinsWaypoints(lastWP, intermediateWP, curve_radius, dx, 1);
+                    Path = [Path ;dubinsWP];
+                    i = i + size(dubinsWP,1);
+                    
+                    Path(i,:) = intermediateWP;
+                    i = i+1;
+                    
+                    dr = dr + dist;
                 end
-                
-                Path(i,:) = intermediateWP;
-                i = i+1;
             end
            
             Path(i,:) = enterWP;
@@ -158,7 +174,7 @@ end
 % title('Intersection Points');
 % hold off;
 
-Dist = [db df];
+Dist = [db df dr];
 
 end
 

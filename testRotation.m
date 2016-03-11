@@ -2,8 +2,7 @@ clear
 clc
 
 M = getPolygon(8,1,1,1);
-
-
+curve_radius = 0.25;
 
 pts_s = [M(:,1) M(:,2)];
 pts_e = [M(:,3) M(:,4)];
@@ -37,7 +36,8 @@ end
 % title('Diameter function')
 % ylabel('Diameter')   
 
-[Path D] = getPath(M, 0.2, 0.4);
+[Path D] = getPath(M, 0.2, curve_radius);
+D
 
 figure('Position',[10 100 500 500],'Renderer','zbuffer');
 line([M(:,1)';M(:,3)'],[M(:,2)';M(:,4)'],'Color','r');
