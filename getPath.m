@@ -26,6 +26,9 @@ df = 0;
 db = 0;
 dir = 1;% forth abajo arriba, -back
 
+%%
+%Calcular distancia de la curva
+
 % Show the intersection points.
 %     figure('Position',[10 100 500 500],'Renderer','zbuffer'); 
 %     axes_properties.box             = 'on';
@@ -35,13 +38,19 @@ dir = 1;% forth abajo arriba, -back
 %     axes_properties.NextPlot        = 'add';
 %     axes(axes_properties,'parent',gcf);
 %     hold on
-    
+  
+%%
 i = 1; %numero de waypoints agregados
+lines = 0;
+enterWP = [0 0];
+exitWP = [0 0];
+lastWP = [0 0];
 
 while(x1 <= r_limit)
     LineXY = [x1 y1 x2 y2];
     x1 = x1 + dx;
     x2 = x1;
+    lines = lines +1;
     
     out = lineSegmentIntersect(M,LineXY);
     intersections = [out.intMatrixX(:) out.intMatrixY(:)];
@@ -53,7 +62,8 @@ while(x1 <= r_limit)
     n = size(intersections,1);
     if (n == 1)
         p1 = intersections(1,:);
-        Path(i,:) = p2;
+        Path(i,:) = p1;
+        enterWP = p1;
         i = i+1;
     end
     
@@ -61,43 +71,86 @@ while(x1 <= r_limit)
         p1 = intersections(1,:);
         p2 = intersections(2,:);
         % las ordenamos de acuerdo a la dirección
-        if (dir == 1)
+        if (dir == 1) % direcciń hacia arriba
             if (p2(1,2)<p1(1,2))
-                %intercambiamos
-                Path(i,:) = p2;
-                i = i+1;
-                Path(i,:) = p1;
-                i = i+1;
+                %Path(i,:) = p2;
+                enterWP = p2;
+                %i = i+1;
+                %Path(i,:) = p1;
+                exitWP = p1;
+                %i = i+1;
             else
-                Path(i,:) = p1;
-                i = i+1;
-                Path(i,:) = p2;
+                %Path(i,:) = p1;
+                enterWP = p1;
+                %i = i+1;
+                %Path(i,:) = p2;
+                exitWP = p2;
+                %i = i+1;
+            end
+            
+            if(lines > 1)
+                % agregar un punto para compensar
+                dif = enterWP(1,2) - lastWP(1,2);
+                if(dif < 0) % agregar un punto a la izquierda
+                    intermediateWP = [lastWP(1,1) enterWP(1,2)];
+                else % agregar un punto a la derecha
+                    intermediateWP = [enterWP(1,1) lastWP(1,2)];
+                end
+                
+                Path(i,:) = intermediateWP;
                 i = i+1;
             end
+            
+            Path(i,:) = enterWP;
+            i = i+1;
+            Path(i,:) = exitWP;
+            i = i+1;
+            
             dist = abs(p2(1,2) - p1(1,2));
             df = df + dist;
-        else
+        else % dirección hacia abajo
            if (p2(1,2)<p1(1,2)) 
-               Path(i,:) = p1;
-               i = i+1;
-               Path(i,:) = p2;
-               i = i+1;
+               %Path(i,:) = p1;
+               enterWP = p1;
+               %i = i+1;
+               %Path(i,:) = p2;
+               exitWP = p2;
+               %i = i+1;
            else
-               Path(i,:) = p2;
-               i = i+1;
-               Path(i,:) = p1;
-               i = i+1;
+               %Path(i,:) = p2;
+               enterWP = p2;
+               %i = i+1;
+               %Path(i,:) = p1;
+               exitWP = p1;
+               %i = i+1;
            end
+           
+           if(lines > 1)
+                % agregar un punto para compensar
+                dif = enterWP(1,2) - lastWP(1,2);
+                if(dif > 0) % agregar un punto a la izquierda
+                    intermediateWP = [lastWP(1,1) enterWP(1,2)];
+                else % agregar un punto a la derecha
+                    intermediateWP = [enterWP(1,1) lastWP(1,2)];
+                end
+                
+                Path(i,:) = intermediateWP;
+                i = i+1;
+            end
+           
+            Path(i,:) = enterWP;
+            i = i+1;
+            Path(i,:) = exitWP;
+            i = i+1
+            
            dist = abs(p2(1,2) - p1(1,2));
            db = db + dist;
         end
+        
         dir = dir * -1;
+        lastWP = exitWP;
     end       
-    Path
     
-%     line([M(:,1)';M(:,3)'],[M(:,2)';M(:,4)'],'Color','r');
-%     line([LineXY(:,1)';LineXY(:,3)'],[LineXY(:,2)';LineXY(:,4)'],'Color','k');
-%     scatter(intersections(:,1), intersections(:,2),[],'b');
     
     %pause
 end

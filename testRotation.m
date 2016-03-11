@@ -3,9 +3,7 @@ clc
 
 M = getPolygon(8,1,1,1);
 
-% figure('Position',[10 100 500 500],'Renderer','zbuffer');
-% line([M(:,1)';M(:,3)'],[M(:,2)';M(:,4)'],'Color','r');
-% title('Original Polygon');
+
 
 pts_s = [M(:,1) M(:,2)];
 pts_e = [M(:,3) M(:,4)];
@@ -41,6 +39,12 @@ end
 
 [Path D] = getPath(M, 0.2, 0.4);
 
-figure('Position',[500 90 500 500],'Renderer','zbuffer');
+figure('Position',[10 100 500 500],'Renderer','zbuffer');
+line([M(:,1)';M(:,3)'],[M(:,2)';M(:,4)'],'Color','r');
+hold on
 plot(Path(:,1), Path(:,2));
-title('Straight Path');
+title('Original Polygon');
+
+% figure('Position',[500 90 500 500],'Renderer','zbuffer');
+% plot(Path(:,1), Path(:,2));
+% title('Straight Path');
