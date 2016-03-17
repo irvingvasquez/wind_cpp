@@ -16,7 +16,6 @@ pts_e = [M(:,3) M(:,4)];
 %line([M2(:,1)';M2(:,3)'],[M2(:,2)';M2(:,4)'],'Color','r');
 %title('Intersection Points');
 
-
 %% 
 steps = 100;
 diam = zeros(steps+1,1);
@@ -43,7 +42,7 @@ figure('Position',[10 100 500 500],'Renderer','zbuffer');
 line([M(:,1)';M(:,3)'],[M(:,2)';M(:,4)'],'Color','r');
 hold on
 plot(Path(:,1), Path(:,2));
-title('Original Polygon');
+%title('Original Polygon');
 
 % figure('Position',[500 90 500 500],'Renderer','zbuffer');
 % plot(Path(:,1), Path(:,2));
