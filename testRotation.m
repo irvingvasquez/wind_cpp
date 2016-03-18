@@ -15,8 +15,8 @@ pts_e = [M(:,3) M(:,4)];
 %figure('Position',[10 100 500 500],'Renderer','zbuffer');
 %line([M2(:,1)';M2(:,3)'],[M2(:,2)';M2(:,4)'],'Color','r');
 %title('Intersection Points');
-
 %% 
+
 steps = 100;
 diam = zeros(steps+1,1);
 x = 0:pi/steps:pi;

@@ -1,5 +1,5 @@
+% Dist = [lb lf ll lr];
 function [Path, Dist] = getPath(M, dx, curve_radius)
-
 %% Generate lines
 
 gap_y = 1;
