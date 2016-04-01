@@ -1,5 +1,7 @@
+% BUG que pasa si hay mas de una intersección con la linea vertical
+
 % Dist = [lb lf ll lr];
-function [Path, Dist] = getPath(M, dx, curve_radius)
+function [Path, Dist, nLines] = getPath(M, dx, curve_radius)
 %% Generate lines
 
 gap_y = 1;
@@ -16,7 +18,6 @@ y1 = down_limit - gap_y;
 y2 = up_limit + gap_y;
 
 %nl = floor((r_limit - l_limit)/dx) +1;
-i = 1;
 %LinesXY = zeros(nl,4);
 
 x1 = l_limit;
@@ -44,23 +45,25 @@ dir = 1;% forth abajo arriba, -back
 %%
 i = 1; %numero de waypoints agregados
 lines = 0;
+nLinesF = 0;
+nLinesB = 0;
 enterWP = [0 0];
 exitWP = [0 0];
 lastWP = [0 0];
 
 while(x1 <= r_limit)
+    % linea de intersección
     LineXY = [x1 y1 x2 y2];
     x1 = x1 + dx;
     x2 = x1;
     lines = lines +1;
     
+    %intersecciones
     out = lineSegmentIntersect(M,LineXY);
     intersections = [out.intMatrixX(:) out.intMatrixY(:)];
     intersections( ~any(intersections,2), : ) = [];  
     
-    intersections
-    dir
-    
+   
     n = size(intersections,1);
     if (n == 1)
         p1 = intersections(1,:);
@@ -69,19 +72,26 @@ while(x1 <= r_limit)
         i = i+1;
     end
     
+    % si hay dos intersecciones entonces tomamos las intersecciones como wp
     if (n == 2)
         p1 = intersections(1,:);
         p2 = intersections(2,:);
+        
         % las ordenamos de acuerdo a la dirección
         if (dir == 1) % direcciń hacia arriba
+            
+            % ordenar los puntos para que corresponda con la dirección
+            % hacia arriba
             if (p2(1,2)<p1(1,2))
-                enterWP = p2;
-                exitWP = p1;
+                enterWP = p2; % punto de entrada a la linea
+                exitWP = p1; % punto de salida de la linea
             else
                 enterWP = p1;
                 exitWP = p2;
             end
             
+            % si hay lineas previas entonces conectamos la linea previa con
+            % la nueva a través de curvas de dubins
             if(lines > 1)
                 % agregar un punto para compensar
                 dif = enterWP(1,2) - lastWP(1,2);
@@ -114,9 +124,12 @@ while(x1 <= r_limit)
             Path(i,:) = exitWP;
             i = i+1;
             
-            dist = abs(p2(1,2) - p1(1,2));
+            dist = norm(exitWP-enterWP);
             df = df + dist;
+            nLinesF = nLinesF +1;
         else % dirección hacia abajo
+            
+           %ordenar los waypoints
            if (p2(1,2)<p1(1,2)) 
                enterWP = p1;
                exitWP = p2;
@@ -156,17 +169,18 @@ while(x1 <= r_limit)
             Path(i,:) = enterWP;
             i = i+1;
             Path(i,:) = exitWP;
-            i = i+1
+            i = i+1;
             
-           dist = abs(p2(1,2) - p1(1,2));
-           db = db + dist;
+            dist = norm(exitWP-enterWP);
+            db = db + dist;
+            nLinesB = nLinesB +1 ;
         end
         
         dir = dir * -1;
         lastWP = exitWP;
     end       
     
-    
+    nLines = [nLinesB nLinesF];
     %pause
 end
 

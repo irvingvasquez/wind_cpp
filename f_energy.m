@@ -1,46 +1,49 @@
 %objetive function
-% i = 1, fordward
-% i = 2, backward
-% i = 3, left curve
-% i = 4, right curve
-%TODO
 
-function energy = f_energy(M, beta, i, dx, curve_radius, u, w)
-    alpha1 = 1;
-    alpha2 = 1;
-    
-    
-%% Rotate M
-    pts_s = [M(:,1) M(:,2)];
-    pts_e = [M(:,3) M(:,4)];
-
-    pts_s2 = rotatePolygon(pts_s, theta);
-    pts_e2 = rotatePolygon(pts_e, theta);
-    M2 = [pts_s2' pts_e2'];
+function [energy, D] = f_energy(M, dx, curve_radius, u, w, gamma_w)
+    b0 = 200; %watts
+    b0 = 1; %REMOVE
+    b1 = 0.0;
+    b2 = 0.0;
     
     %% Calculate path
-    [Path D] = getPath(M2, dx, curve_radius);
+    disp('Calculate path');
+    [Path, D] = getPath(M, dx, curve_radius);
+
     % D = [lb lf ll lr];
-        
+    lb = D(1);
+    lf = D(2);
+    ll = D(3);
+    lr = D(4);
+    %ltotal = lf + lb +ll+ lr;
+    %ltotal = lf + lb; %remove
+    
     %% Calculate energy
+    disp('Estimate energy');
+    
+    % Estimate velocity
+    theta = pi/2;
+    vf = u * sin(theta) + w * sin(gamma_w);
+    
+    theta = 3*pi/2;
+    vb = u * sin(theta) + w * sin(gamma_w);
     % Estimate the Power consumption
-    a_i = [0.0578   -0.5254   -1.6629  225.5714]; %parameters obtained by fitting, powerFitting.m
-    power = polyval(a_i, norm(u));
+        
+    %energy
+    theta = pi/2;
+    gamma = gamma_w - theta;
+    ef = b0*lf/vf + b1 * w * cos (gamma) * lf/vf + b2 * w * sin(gamma) * lf/vf
     
-    % Estimate ground velocity
-    if(i==1)
-        theta = pi/2;
-        v = alpha1 * (norm(u) * cos(theta) + w(1,1));
-    end
+    theta = 3*pi/2;
+    gamma = gamma_w - theta;
+    % coloque abs por que la función de potencia es positiva siempre, si la
+    % velocidad es negativa aún se consume potencia, sin embargo la
+    % regresión tiene una función lineal positiva 
+    eb = b0*lb/abs(vb) + b1* abs(w*cos(gamma)) * lb/abs(vb) + b2* abs(w*sin(gamma)) * lb/abs(vb)
     
-    if(i==2)
-        theta= pi + pi/2;
-        v = alpha1 * (norm(u) * cos(theta) + w(1,1));
-    end
+    el = 0;
+    er = 0;
     
-    if(i==3)
-    
-    %% Estimate ground velocities
-    
-    
+    energy = ef + eb + el + er;
+    %exit 0
 end
