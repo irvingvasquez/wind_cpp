@@ -1,10 +1,17 @@
 %objetive function
 
-function [energy, D] = f_energy(M, dx, curve_radius, u, w, gamma_w)
-    b0 = 200; %watts
-    b0 = 1; %REMOVE
-    b1 = 0.0;
-    b2 = 0.0;
+function [energy, D, Gamma] = f_energy(M, dx, curve_radius, u, w, gamma_w)
+    b0 = 0.0555;
+    b0 = 0;
+    b1 = 0;
+    b2 = 0.0111;
+    w = 5;
+    
+    %gamma_w = pi/4;
+    %u = 10;
+    %r = 15;
+    %t0 = 0;
+    %t1 = 4;
     
     %% Calculate path
     disp('Calculate path');
@@ -21,29 +28,35 @@ function [energy, D] = f_energy(M, dx, curve_radius, u, w, gamma_w)
     %% Calculate energy
     disp('Estimate energy');
     
-    % Estimate velocity
+    % fordward energy
     theta = pi/2;
-    vf = u * sin(theta) + w * sin(gamma_w);
+    vf = abs(u * sin(theta) + w * sin(gamma_w));
+    t0 = 0;
+    t1 = lf/vf;
     
-    theta = 3*pi/2;
-    vb = u * sin(theta) + w * sin(gamma_w);
-    % Estimate the Power consumption
+    ff_gamma = @(gamma_w, theta, t) gamma_w - theta;
+    
+    ff_power = @(t,b0,b1,b2,w,gamma_w, theta) b0 + b1 * abs(w * cos(ff_gamma(gamma_w, theta, t))) + b2 * abs(w * sin(ff_gamma(gamma_w, theta,t)));
+    
+    gammaf = ff_gamma( gamma_w,theta);
+    p = ff_power(0,b0,b1,b2,w,gamma_w,theta)
+    ef = p * t1;
+    %ef = integral(@(t)ff_power(t, b0, b1, b2, w, gamma_w, theta), t0, t1);
         
-    %energy
-    theta = pi/2;
-    gamma = gamma_w - theta;
-    ef = b0*lf/vf + b1 * w * cos (gamma) * lf/vf + b2 * w * sin(gamma) * lf/vf
+    %backward energy
     
     theta = 3*pi/2;
-    gamma = gamma_w - theta;
-    % coloque abs por que la función de potencia es positiva siempre, si la
-    % velocidad es negativa aún se consume potencia, sin embargo la
-    % regresión tiene una función lineal positiva 
-    eb = b0*lb/abs(vb) + b1* abs(w*cos(gamma)) * lb/abs(vb) + b2* abs(w*sin(gamma)) * lb/abs(vb)
+    vb = abs(u * sin(theta) + w * sin(gamma_w));
+    t1 = lb/vb;
+    gammab = ff_gamma(gamma_w,theta);
+    p = ff_power(0,b0,b1,b2,w,gamma_w,theta)
+    eb = p * t1;
+    %eb = integral(@(t)ff_power(t, b0, b1, b2, w, gamma_w, theta), t0, t1);
     
     el = 0;
     er = 0;
     
     energy = ef + eb + el + er;
+    Gamma = gammaf;
     %exit 0
 end
