@@ -1,12 +1,7 @@
 %objetive function
 
-function [energy, D, Gamma] = f_energy(M, dx, curve_radius, u, w, gamma_w)
-    b0 = 0.0555;
-    b0 = 0;
-    b1 = 0;
-    b2 = 0.0111;
-    w = 5;
-    
+function [energy, D, Gamma] = f_energy(M, dx, curve_radius, u, w, gamma_w, b0, b1 ,b2)
+        
     %gamma_w = pi/4;
     %u = 10;
     %r = 15;
@@ -14,7 +9,7 @@ function [energy, D, Gamma] = f_energy(M, dx, curve_radius, u, w, gamma_w)
     %t1 = 4;
     
     %% Calculate path
-    disp('Calculate path');
+    %disp('Calculate path');
     [Path, D] = getPath(M, dx, curve_radius);
 
     % D = [lb lf ll lr];
@@ -26,7 +21,7 @@ function [energy, D, Gamma] = f_energy(M, dx, curve_radius, u, w, gamma_w)
     %ltotal = lf + lb; %remove
     
     %% Calculate energy
-    disp('Estimate energy');
+    %disp('Estimate energy');
     
     % fordward energy
     theta = pi/2;
@@ -39,18 +34,17 @@ function [energy, D, Gamma] = f_energy(M, dx, curve_radius, u, w, gamma_w)
     ff_power = @(t,b0,b1,b2,w,gamma_w, theta) b0 + b1 * abs(w * cos(ff_gamma(gamma_w, theta, t))) + b2 * abs(w * sin(ff_gamma(gamma_w, theta,t)));
     
     gammaf = ff_gamma( gamma_w,theta);
-    p = ff_power(0,b0,b1,b2,w,gamma_w,theta)
+    p = ff_power(0,b0,b1,b2,w,gamma_w,theta);
     ef = p * t1;
     %ef = integral(@(t)ff_power(t, b0, b1, b2, w, gamma_w, theta), t0, t1);
         
     %backward energy
-    
     theta = 3*pi/2;
     vb = abs(u * sin(theta) + w * sin(gamma_w));
-    t1 = lb/vb;
+    t2 = lb/vb;
     gammab = ff_gamma(gamma_w,theta);
-    p = ff_power(0,b0,b1,b2,w,gamma_w,theta)
-    eb = p * t1;
+    p = ff_power(0,b0,b1,b2,w,gamma_w,theta);
+    eb = p * t2;
     %eb = integral(@(t)ff_power(t, b0, b1, b2, w, gamma_w, theta), t0, t1);
     
     el = 0;
@@ -58,5 +52,6 @@ function [energy, D, Gamma] = f_energy(M, dx, curve_radius, u, w, gamma_w)
     
     energy = ef + eb + el + er;
     Gamma = gammaf;
+    pause
     %exit 0
 end
