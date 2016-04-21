@@ -52,6 +52,6 @@ function [energy, D, Gamma] = f_energy(M, dx, curve_radius, u, w, gamma_w, b0, b
     
     energy = ef + eb + el + er;
     Gamma = gammaf;
-    pause
+    %pause
     %exit 0
 end
