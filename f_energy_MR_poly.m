@@ -1,7 +1,18 @@
 %objetive function
 
-function [energy, D, gamma_return] = f_energyMR(M, dx, curve_radius, v, w, gamma_w, b0, b1 ,b2)
+function [energy, D, gamma_return] = f_energy_MR_poly(M, dx, curve_radius, v, w, gamma_w, b0, b1 ,b2)
         
+    velocity = [2 4 6 8 10 12 14 16];
+    power = [220  215 210  208 212 230 260 300];
+    %plot(velocity, power, 'o');
+    p = polyfit(velocity,power,3);
+    %t2 = 0:0.1:16;
+    %y2 = polyval(p,t2);
+    %figure
+    %plot(velocity,power,'o',t2,y2)
+    %title('Plot of Data (Points) and Model (Line)')
+
+
     %gamma_w = pi/4;
     %u = 10;
     %r = 15;
@@ -22,7 +33,8 @@ function [energy, D, gamma_return] = f_energyMR(M, dx, curve_radius, v, w, gamma
     
     %% Calculate energy
     %disp('Estimate energy');
-    power_mr = @(v, w, angle, b0, b1, b2) b0 + b1 * abs(v - w*cos(angle)) + b2 * abs(w * sin(angle));
+    %power_mr = @(v, w, angle, b0, b1, b2) b0 + b1 * abs(v - w*cos(angle)) + b2 * abs(w * sin(angle));
+    power_mr = @(v, w, angle, b0, b1, b2) polyval(p,(abs(v - w*cos(angle)))) + polyval(p, abs(w * sin(angle))); 
     
     % fordward energy
     theta = pi/2;
