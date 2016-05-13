@@ -22,7 +22,7 @@ function varargout = guiMR(varargin)
 
 % Edit the above text to modify the response to help guiMR
 
-% Last Modified by GUIDE v2.5 21-Apr-2016 11:36:31
+% Last Modified by GUIDE v2.5 12-May-2016 15:44:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -80,7 +80,7 @@ function getPolygonButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 % Poligono
 n_vertices = 4;
-polygon_radius = 200; %meters
+polygon_radius = 100; %meters
 rad_var = 5;
 ang_var = 1;
 % get polygon
@@ -455,3 +455,27 @@ cla(handles.axes2);
 cla(handles.axes3);
 cla(handles.axes4);
 cla(handles.axes5);
+
+
+% --- Executes on button press in saveFigButton.
+function saveFigButton_Callback(hObject, eventdata, handles)
+% hObject    handle to saveFigButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+FigPolygon = figure;
+copyobj(handles.axes1, FigPolygon);
+
+FigPath = figure;
+copyobj(handles.axes5, FigPath);
+
+Fig2 = figure;
+copyobj(handles.axes2, Fig2);
+
+Fig3 = figure;
+copyobj(handles.axes3, Fig3);
+
+Fig4 = figure;
+copyobj(handles.axes4, Fig4);
+
+%hgsave(Fig2, 'myFigure.fig');
+
