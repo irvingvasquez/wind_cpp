@@ -82,7 +82,7 @@ function getPolygonButton_Callback(hObject, eventdata, handles)
 n_vertices = 4;
 polygon_radius = 100; %meters
 rad_var = 5;
-ang_var = 1;
+ang_var = 1 ;
 % get polygon
 M = getPolygon(n_vertices,polygon_radius,rad_var,ang_var);
 handles.m = M;
@@ -356,7 +356,8 @@ for beta = 0:maxrotation/steps:maxrotation
         M2 = [pts_s2' pts_e2'];
         diam(i) = diameter(M2);
         gamma_w_prima = gamma_w + beta;
-        [energy(i), D, gamma(i)] = f_energy_MR_poly(M2, dx, curve_radius, v, w, gamma_w_prima, b0, b1, b2);
+        [energy(i), D, gamma(i)] = f_energy_MR_poly_onespeed(M2, dx, curve_radius, v, w, gamma_w_prima);
+        %[energy(i), D, gamma(i)] = f_energy_MR_poly(M2, dx, curve_radius, v, w, gamma_w_prima, b0, b1, b2);
         length(i,:) = [D sum(D)];
         if(energy(i)<min_energy)
             best_beta = beta;

@@ -1,11 +1,12 @@
 %objetive function
 
-function [energy, D, gamma_return] = f_energy_MR_poly(M, dx, curve_radius, v, w, gamma_w, b0, b1 ,b2)
-        
+function [energy, D, gamma_return] = f_energy_MR_poly_onespeed(M, dx, curve_radius, v_spd, w_spd, gamma_w)
+    disp('Calculating Energy');    
     velocity = [2 4 6 8 10 12 14 16];
     power = [220  215 210  208 212 230 260 300];
     %plot(velocity, power, 'o');
-    p = polyfit(velocity,power,3);
+    coef = polyfit(velocity,power,3);
+    power_mr = @(speed) polyval(coef, speed); 
     %t2 = 0:0.1:16;
     %y2 = polyval(p,t2);
     %figure
@@ -13,11 +14,7 @@ function [energy, D, gamma_return] = f_energy_MR_poly(M, dx, curve_radius, v, w,
     %title('Plot of Data (Points) and Model (Line)')
 
 
-    %gamma_w = pi/4;
-    %u = 10;
-    %r = 15;
-    %t0 = 0;
-    %t1 = 4;
+    W = [w_spd.*cos(gamma_w); w_spd.*sin(gamma_w)];
     
     %% Calculate path
     %disp('Calculate path');
@@ -33,37 +30,44 @@ function [energy, D, gamma_return] = f_energy_MR_poly(M, dx, curve_radius, v, w,
     
     %% Calculate energy
     %disp('Estimate energy');
-    %power_mr = @(v, w, angle, b0, b1, b2) b0 + b1 * abs(v - w*cos(angle)) + b2 * abs(w * sin(angle));
-    power_mr = @(v, w, angle, b0, b1, b2) polyval(p,(abs(v - w*cos(angle)))) + polyval(p, abs(w * sin(angle))); 
     
     % fordward energy
     theta = pi/2;
-    t = lf/v;
+    t = lf/v_spd;
     
-    gamma = gamma_w-theta;
-    gamma_return = gamma;
-    p = power_mr(v,w,gamma,b0,b1,b2);
+    V = [v_spd .* cos(theta);v_spd .* sin(theta)];
+    U = V - W;
+    u_spd = norm(U);
+    p = power_mr(u_spd);
     ef = p * t;       
+    
+    gamma_return = gamma_w-theta;
     
     %backward energy
     theta = 3*pi/2;
-    t = lb/v;
-    gamma = gamma_w-theta;
-    p = power_mr(v, w, gamma, b0, b1, b2);
+    t = lb/v_spd;
+    V = [v_spd .* cos(theta);v_spd .* sin(theta)];
+    U = V - W;
+    u_spd = norm(U);
+    p = power_mr(u_spd);
     eb = p * t;
     
     %right energy
     theta = 0;
-    t = lr/v;
-    gamma = gamma_w-theta;
-    p = power_mr(v,w,gamma,b0,b1,b2);
+    t = lr/v_spd;
+    V = [v_spd .* cos(theta);v_spd .* sin(theta)];
+    U = V - W;
+    u_spd = norm(U);
+    p = power_mr(u_spd);
     er = p * t;
     
     %left energy
     theta = 0;
-    t = ll/v;
-    gamma = gamma_w-theta;
-    p = power_mr(v,w,gamma,b0,b1,b2);
+    t = ll/v_spd;
+    V = [v_spd .* cos(theta);v_spd .* sin(theta)];
+    U = V - W;
+    u_spd = norm(U);
+    p = power_mr(u_spd);
     el = p * t;
     
     energy = ef + eb + el + er;
